@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Change to Deployment Directory
-        run: cd WellTrack/WellTrack && echo "Moved to $(pwd)"
+        run: cd ../ && echo "Moved to $(pwd)"
       
       - name: Install Dependencies
         run: pip install -r requirements.txt
