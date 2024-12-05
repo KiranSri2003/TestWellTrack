@@ -18,20 +18,38 @@ class CalorieLog(models.Model):
 
 
 # Model for appointments
+class WTAppointment(models.Model):
+    name = models.CharField(max_length=100)
+    appointment_date = models.DateTimeField()
+    description = models.TextField(blank=True, null=True)  # Optional field
+    status = models.CharField(max_length=50, default='Pending')
+
+    def __str__(self):
+        return f"{self.name} - {self.appointment_date}"
 
 class Appointment(models.Model):
     name = models.CharField(max_length=100)
-    appointment_date = models.DateField()
-    description = models.TextField(blank=True, null=True)
-    status = models.CharField(
-        max_length=50,
-        choices=[
-            ("Pending", "Pending"), 
-            ("Confirmed", "Confirmed"), 
-            ("Cancelled", "Cancelled")
-        ],
-        default="Pending"  # Default status for appointments
-    )  # Status of the appointment
+    appointment_date = models.DateTimeField()
+    description = models.TextField()
+    status = models.CharField(max_length=20)
 
     def __str__(self):
-        return f"{self.name} on {self.appointment_date.strftime('%Y-%m-%d %H:%M:%S')}"
+        return f"Appointment with {self.name} on {self.appointment_date}"
+    
+class WT_appointment(models.Model):
+    name = models.CharField(max_length=255)
+    appointment_date = models.DateTimeField()
+    description = models.TextField()
+    status = models.CharField(max_length=50, choices=[('Pending', 'Pending'), ('Completed', 'Completed')])
+
+    def __str__(self):
+        return self.name
+    
+class Appointment(models.Model):
+    name = models.CharField(max_length=255)
+    appointment_date = models.DateField()
+    description = models.TextField()
+    status = models.CharField(max_length=100, choices=[('Scheduled', 'Scheduled'), ('Completed', 'Completed')])
+
+    def __str__(self):
+        return self.name

@@ -7,12 +7,22 @@ from django.http import JsonResponse
 from .forms import CreateUserForm, LoginForm
 from .models import CalorieLog  # Import the CalorieLog model
 import json
+from django.contrib import messages
 from transformers import pipeline
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Appointment
-from WT.models import Appointment
+from .models import WTAppointment
 import google.generativeai as genai
 from django.contrib.auth import authenticate, login, logout
+from .models import Appointment
+#from WT.models import Appointment
+from .forms import WTAppointmentForm
+from .models import WT_appointment
+
+
+def appointments_list(request):
+    appointments = WT_appointment.objects.all()
+    return render(request, 'appointments_list.html', {'appointments': appointments})
+
 
 genai.configure(api_key="AIzaSyAxKriskOxxJ4L9O4qKwmGxHDPiIlaP5X8")
 
@@ -142,30 +152,42 @@ def appointment_manager(request):
     # For now, render a placeholder HTML page
     return render(request, 'WT/appointment-manager.html')
 
+from django.shortcuts import render
+
+# def add_appointment(request):
+#     # Logic to handle the add appointment functionality
+#     return render(request, 'WT/add-appointment.html')
+
 def add_appointment(request):
     if request.method == 'POST':
-        # Extract data from form submission
         name = request.POST.get('name')
         appointment_date = request.POST.get('appointment_date')
         description = request.POST.get('description')
-        
-        # Save the appointment (you should handle form validation here)
-        Appointment.objects.create(
+        status = request.POST.get('status', 'Pending')  # default to 'Pending' if no status is set
+
+        # Convert appointment_date to a proper datetime format
+        from datetime import datetime
+        appointment_date = datetime.strptime(appointment_date, '%Y-%m-%dT%H:%M')
+
+        # Save the appointment in the database
+        appointment = Appointment(
             name=name,
             appointment_date=appointment_date,
-            description=description
+            description=description,
+            status=status,
+            user=request.user  # Associate the appointment with the logged-in user
         )
-        
-        # Redirect or render a success message
-        return redirect('appointment-success')  # Adjust redirect as necessary
-    
-    return render(request, 'add-appointment.html')
+        appointment.save()
+
+        return redirect('appointment-success')  # Redirect to a success page or another page
+    else:
+        return render(request, 'WT/add-appointment.html')
 
 def add_reminder(request):
     return render(request, 'WT/add_reminder.html')
 
 
-def book_appointment(request, appointment_id):
+#def book_appointment(request, appointment_id):
     # Retrieve the appointment by ID
     appointment = get_object_or_404(Appointment, id=appointment_id)
     
@@ -175,8 +197,20 @@ def book_appointment(request, appointment_id):
         appointment.save()
         
         return redirect('appointment-confirmed')  # Redirect to a confirmation page
-    
-    return render(request, 'book_appointment.html', {'appointment': appointment})
+        return render(request, 'book_appointment.html', {'appointment': appointment})
+
+def book_appointment(request):
+    if request.method == 'POST':
+        form = WTAppointmentForm(request.POST)
+        if form.is_valid():
+            # Save the appointment with default status as 'Pending'
+            form.save()
+            return redirect('appointment-success')  # Redirect to a success page
+    else:
+        form = WTAppointmentForm()
+
+    return render(request, 'add-appointment.html', {'form': form})
+
 def confirm_appointment(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -193,11 +227,14 @@ def confirm_appointment(request):
 
     return render(request, "book_appointment.html")
 
+
+
+
 def modify_appointment(request, appointment_id=None):
     # Check if there are any appointments in the database
     if not Appointment.objects.exists():
         messages.warning(request, "No appointments available to modify.")
-        return redirect("appointments-list")  # Redirect to the appointments list
+        return redirect('WT/appointments_list')  # Redirect to the appointments list
 
     # Get the specific appointment for modification
     appointment = get_object_or_404(Appointment, id=appointment_id)
@@ -209,11 +246,17 @@ def modify_appointment(request, appointment_id=None):
         appointment.description = request.POST.get("description")
         appointment.save()
         messages.success(request, "Appointment updated successfully!")
-        return redirect("appointments-list")  # Redirect to the appointments list
+        return redirect('WT/appointments_list')  # Redirect to the appointments list
 
-    return render(request, "modify_appointment.html", {"appointment": appointment})
+    # If not a POST request, render the form with the appointment details
+    context = {
+        "appointment": appointment
+    }
+    return render(request, 'WT/modify_appointment.html', context)
 
-def delete_appointment(request):
+
+
+#def delete_appointment(request):
     if request.method == "POST":
         name = request.POST.get("name").strip()
         
@@ -230,4 +273,76 @@ def delete_appointment(request):
         messages.success(request, f"Appointment '{name}' has been successfully deleted.")
         return redirect("appointments-list")
 
-    return render(request, "delete_appointment.html")
+    return render(request, 'WT/delete_appointment.html')
+
+def delete_appointment(request):
+    if request.method == "POST":
+        appointment_name = request.POST.get("name")
+        try:
+            # Get the appointment by name (ensure this is unique or modify to fit your logic)
+            appointment = Appointment.objects.get(name=appointment_name)
+            # Delete the appointment from the database
+            appointment.delete()
+            messages.success(request, f"Appointment '{appointment_name}' has been deleted successfully.")
+        except Appointment.DoesNotExist:
+            # If the appointment doesn't exist, show an error message
+            messages.error(request, f"Appointment with the name '{appointment_name}' does not exist.")
+
+        return redirect('appointments_list')  # Redirect to the appointments list page after deletion
+
+    return render(request, 'WT/delete_appointment.html')  # Render the form for deleting appointments
+
+@login_required(login_url="my-login")
+def appointments_list(request):
+    """
+    Renders a list of appointments for the logged-in user.
+    """
+
+    # Query appointments from the database
+    appointments = Appointment.objects.all()
+    return render(request, 'WT/appointments_list.html', {'appointments': appointments})
+
+@login_required(login_url="my-login")
+def appointment_options(request):
+    return render(request, 'WT/appointment-options.html')
+
+from .forms import WTAppointmentForm
+
+#def create_appointment(request):
+#    if request.method == 'POST':
+#        form = WTAppointmentForm(request.POST)
+#        if form.is_valid():
+#            form.save()  # Saves the data to the WT_appointment table
+#            return redirect('success_url')  # Redirect after successful form submission
+#    else:
+#        form = WTAppointmentForm()
+
+#    return render(request, 'appointment_form.html', {'form': form})
+
+def create_appointment(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        date = request.POST['date']
+        description = request.POST['description']
+        status = 'Scheduled'  # Default status
+
+        # Create an appointment in the database
+        appointment = Appointment.objects.create(
+            name=name,
+            date=date,
+            description=description,
+            status=status
+        )
+
+        # Redirect to success page
+        return redirect('appointment_success', appointment_id=appointment.id)
+
+    return render(request, 'create_appointment.html')
+    
+def appointment_success(request, appointment_id):
+    appointment = Appointment.objects.get(id=appointment_id)
+    return render(request, 'WT/appointment_success.html', {'appointment': appointment})
+
+def appointment_success(request):
+    return render(request, 'WT/appointment_success.html')
+

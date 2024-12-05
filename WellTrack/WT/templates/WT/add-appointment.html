@@ -88,25 +88,28 @@
     <h1>Add Appointment</h1>
     
     <form method="POST" action="{% url 'book-appointment' %}">
-        
+        {% csrf_token %}
         
         <!-- Name Input -->
         <div class="mb-3">
-            <label for="name" class="form-label">Your Name</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name" required>
+            <label for="id_name" class="form-label">Your Name</label>
+            <input type="text" class="form-control" id="id_name" name="name" placeholder="Enter your full name" required>
         </div>
         
         <!-- Appointment Date Input -->
         <div class="mb-3">
-            <label for="appointment_date" class="form-label">Appointment Date</label>
-            <input type="datetime-local" class="form-control" id="appointment_date" name="appointment_date" required>
+            <label for="id_appointment_date" class="form-label">Appointment Date</label>
+            <input type="datetime-local" class="form-control" id="id_appointment_date" name="appointment_date" required>
         </div>
         
         <!-- Description Input -->
         <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter a description (optional)"></textarea>
+            <label for="id_description" class="form-label">Description</label>
+            <textarea class="form-control" id="id_description" name="description" rows="4" placeholder="Enter a description (optional)"></textarea>
         </div>
+        
+        <!-- Hidden Status Field (Default: Pending) -->
+        <input type="hidden" name="status" value="Pending">
         
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Book Appointment</button>
@@ -117,4 +120,3 @@
 
 </body>
 </html>
-

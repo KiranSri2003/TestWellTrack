@@ -23,3 +23,11 @@ class LoginForm(AuthenticationForm):
 
     username = forms.CharField(widget=TextInput())
     password = forms.CharField(widget=PasswordInput())
+
+
+from .models import WTAppointment
+
+class WTAppointmentForm(forms.ModelForm):
+    class Meta:
+        model = WTAppointment
+        fields = ['name', 'appointment_date', 'description']

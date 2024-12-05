@@ -83,9 +83,18 @@
         <h1>Delete Appointment</h1>
         <p>Enter the name of the appointment you want to delete.</p>
 
+        <!-- Display messages -->
+        {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Form for deleting appointment -->
         <form method="POST" action="{% url 'delete-appointment' %}">
-
-
+            {% csrf_token %}
             <!-- Appointment Name Input -->
             <div class="mb-3">
                 <label for="name" class="form-label">Appointment Name</label>
