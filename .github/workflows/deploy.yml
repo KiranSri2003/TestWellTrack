@@ -46,5 +46,5 @@ jobs:
       with:
         cluster: WellTrack  # Replace with your ECS cluster name
         service: welltrack_service  # Replace with your ECS service name
-        task-definition: Welltrack_application  # Replace with your ECS task definition family name
+        task-definition: ecs-task-def.json  # Task definition family name
         force-new-deployment: true
