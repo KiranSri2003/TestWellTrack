@@ -39,14 +39,5 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         cluster: WellTrack
         service: welltrack_service
-        task-definition: |
-          family: welltrack
-          containerDefinitions:
-            - name: welltrack-container
-              image: your-dockerhub-username/welltrack:latest
-              memory: 512
-              cpu: 256
-              essential: true
-              portMappings:
-                - containerPort: 8000
-                  hostPort: 8000
+        task-definition: Welltrack_application
+        force-new-deployment: true
