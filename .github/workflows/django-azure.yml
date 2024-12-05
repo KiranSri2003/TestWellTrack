@@ -14,9 +14,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Change to Deployment Directory
-        run: cd ../ && echo "Moved to $(pwd)"
       
       - name: Install Dependencies
         run: pip install -r requirements.txt
