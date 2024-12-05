@@ -31,13 +31,20 @@ jobs:
       run: |
         docker push maneesh0801/welltrack:latest
 
+    # Configure AWS credentials
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Replace with your AWS region
+
+
     # Deploy to AWS ECS
     - name: Deploy to Amazon ECS
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        cluster: WellTrack
-        service: welltrack_service
-        task-definition: Welltrack_application
+        cluster: WellTrack  # Replace with your ECS cluster name
+        service: welltrack_service  # Replace with your ECS service name
+        task-definition: Welltrack_application  # Replace with your ECS task definition family name
         force-new-deployment: true
