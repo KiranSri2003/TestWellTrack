@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 # Model for tracking calories
 class CalorieLog(models.Model):
     user = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name='calorie_logs'
     )  # Link to the user who owns this log
     date = models.DateField()  # Date of the calorie log
@@ -27,15 +27,15 @@ class WTAppointment(models.Model):
     def __str__(self):
         return f"{self.name} - {self.appointment_date}"
 
-class Appointment(models.Model):
-    name = models.CharField(max_length=100)
-    appointment_date = models.DateTimeField()
-    description = models.TextField()
-    status = models.CharField(max_length=20)
+# class Appointment(models.Model):
+#     name = models.CharField(max_length=100)
+#     appointment_date = models.DateTimeField()
+#     description = models.TextField()
+#     status = models.CharField(max_length=20)
 
-    def __str__(self):
-        return f"Appointment with {self.name} on {self.appointment_date}"
-    
+    # def __str__(self):
+    #     return f"Appointment with {self.name} on {self.appointment_date}"
+
 class WT_appointment(models.Model):
     name = models.CharField(max_length=255)
     appointment_date = models.DateTimeField()
@@ -44,7 +44,7 @@ class WT_appointment(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class Appointment(models.Model):
     name = models.CharField(max_length=255)
     appointment_date = models.DateField()

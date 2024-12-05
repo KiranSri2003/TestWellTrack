@@ -8,7 +8,7 @@ from .forms import CreateUserForm, LoginForm
 from .models import CalorieLog  # Import the CalorieLog model
 import json
 from django.contrib import messages
-from transformers import pipeline
+# from transformers import pipeline
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import WTAppointment
 import google.generativeai as genai
@@ -190,12 +190,12 @@ def add_reminder(request):
 #def book_appointment(request, appointment_id):
     # Retrieve the appointment by ID
     appointment = get_object_or_404(Appointment, id=appointment_id)
-    
+
     if request.method == 'POST':
         # Confirm the appointment (e.g., update a 'status' field in your model)
         appointment.status = 'Confirmed'  # Assuming you have a 'status' field
         appointment.save()
-        
+
         return redirect('appointment-confirmed')  # Redirect to a confirmation page
         return render(request, 'book_appointment.html', {'appointment': appointment})
 
@@ -259,7 +259,7 @@ def modify_appointment(request, appointment_id=None):
 #def delete_appointment(request):
     if request.method == "POST":
         name = request.POST.get("name").strip()
-        
+
         # Check if an appointment with the given name exists
         appointment = Appointment.objects.filter(name=name).first()
 
@@ -338,7 +338,7 @@ def create_appointment(request):
         return redirect('appointment_success', appointment_id=appointment.id)
 
     return render(request, 'create_appointment.html')
-    
+
 def appointment_success(request, appointment_id):
     appointment = Appointment.objects.get(id=appointment_id)
     return render(request, 'WT/appointment_success.html', {'appointment': appointment})

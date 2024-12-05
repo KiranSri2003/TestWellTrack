@@ -18,7 +18,10 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-ax@5c$50be#6lw3zmyw&rj#9!7
 DEBUG = os.getenv("DEBUG", "True") == "True"  # Load DEBUG value from .env file
 
 # Set ALLOWED_HOSTS from environment variable or default to local development
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")  # Host list can be defined in .env
+ALLOWED_HOSTS = ["*"]
+# [ "0.0.0.0","127.0.0.1", "localhost",]
+
+# os.getenv("ALLOWED_HOSTS", "0.0.0.0,127.0.0.1,localhost").split(",")  # Host list can be defined in .env
 
 # Application definition
 
@@ -30,6 +33,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "WT",  # Your app here
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "*"
 ]
 
 MIDDLEWARE = [
