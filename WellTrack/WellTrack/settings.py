@@ -36,7 +36,8 @@ INSTALLED_APPS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "*"
+   'http://localhost:8000',
+    'https://localhost:8000', 
 ]
 
 MIDDLEWARE = [
